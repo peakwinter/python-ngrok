@@ -3,7 +3,7 @@
 Python bindings for ngrok local and Link APIs
 
 
-### Use with local ngrok setups
+## Use with local ngrok setups
 
 If your ngrok server is not running at `http://localhost:4040` you need to set your base url like so:
 ```
@@ -23,7 +23,7 @@ Only available on introspected tunnels.
 - Replay request: `ngrok.client.get_request(id).replay()`
 
 
-### Use with ngrok link
+## Use with ngrok link
 
 First set your public ID and secret tokens like so:
 
