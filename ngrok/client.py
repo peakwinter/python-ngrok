@@ -23,6 +23,15 @@ class Tunnel:
         return ("<Tunnel '%s'>" % self.config["addr"]) \
             if self.config.get("addr", None) else "<pending Tunnel>"
 
+    def get_requests(self, limit=99999):
+        requests = []
+        params = {"tunnel_name": self.name, "limit": limit}
+        for x in api("requests/http", params=params)["requests"]:
+            request = Request(x["id"], x["tunnel_name"], x["remote_addr"], x["start"],
+                x["duration"], x["request"], x["response"])
+            requests.append(request)
+        return requests
+
     def _set(self, data={}):
         self.config = data["config"] if data else {}
         self.name = data["name"] if data else None
@@ -66,9 +75,9 @@ class Request:
     def __repr__(self):
         return "<Request id %s>" % self.id
 
-    def replay(self):
+    def replay(self, tunnel=None):
         api("requests/http", "POST",
-            {"id": self.id, "tunnel_name": self.tunnel.name if self.tunnel else None})
+            {"id": self.id, "tunnel_name": self.tunnel.name if self.tunnel else tunnel})
 
 
 def api(endpoint, method="GET", data=None, params=[]):
@@ -109,7 +118,7 @@ def get_requests():
         requests.append(request)
     return requests
 
-def get_tunnel(id):
+def get_request(id):
     try:
         data = api("requests/http/%s" % str(id))
         return Request(x["id"], x["tunnel_name"], x["remote_addr"], x["start"],
