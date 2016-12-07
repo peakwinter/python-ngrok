@@ -82,11 +82,11 @@ class Request:
 
 def api(endpoint, method="GET", data=None, params=[]):
     base_url = BASE_URL or "http://127.0.0.1:4040/"
+    if params:
+        endpoint += "?%s" % urlencode([(x, params[x]) for x in params])
     request = urllib2.Request("%sapi/%s" % (base_url, endpoint))
     if method != "GET":
         request.get_method = lambda: method
-    if params:
-        endpoint += "?%s" % urlencode([(x, params[x]) for x in params])
     request.add_header("Content-Type", "application/json")
     response = urllib2.urlopen(request, json.dumps(data) if data else None)
     try:
