@@ -1,7 +1,7 @@
 import datetime
 import json
-import urllib2
-from urllib import urlencode
+import urllib.request, urllib.error, urllib.parse
+from urllib.parse import urlencode
 
 from collections import namedtuple
 
@@ -63,8 +63,8 @@ class Request:
         self.remote_addr = remote_addr
         self.start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
         self.duration = duration
-        self.request = namedtuple("Request", request.keys())(**request)
-        self.response = namedtuple("Response", response.keys())(**response)
+        self.request = namedtuple("Request", list(request.keys()))(**request)
+        self.response = namedtuple("Response", list(response.keys()))(**response)
         try:
             data = api("tunnels/%s" % tunnel)
             self.tunnel = Tunnel(data["config"], data["name"], data["uri"],
@@ -84,11 +84,11 @@ def api(endpoint, method="GET", data=None, params=[]):
     base_url = BASE_URL or "http://127.0.0.1:4040/"
     if params:
         endpoint += "?%s" % urlencode([(x, params[x]) for x in params])
-    request = urllib2.Request("%sapi/%s" % (base_url, endpoint))
+    request = urllib.request.Request("%sapi/%s" % (base_url, endpoint))
     if method != "GET":
         request.get_method = lambda: method
     request.add_header("Content-Type", "application/json")
-    response = urllib2.urlopen(request, json.dumps(data) if data else None)
+    response = urllib.request.urlopen(request, json.dumps(data) if data else None)
     try:
         return json.loads(response.read())
     except:

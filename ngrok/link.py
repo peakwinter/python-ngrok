@@ -1,7 +1,7 @@
 import base64
 import datetime
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 PUBLIC_ID = ""
@@ -136,12 +136,12 @@ def api(endpoint, method="GET", data=None):
     if not PUBLIC_ID or not SECRET_TOKEN:
         raise Exception("Public ID and secret token must be declared")
     authstr = base64.encodestring('%s:%s' % (PUBLIC_ID, SECRET_TOKEN)).replace('\n', '')
-    request = urllib2.Request("https://api.ngrok.com/%s" % endpoint)
+    request = urllib.request.Request("https://api.ngrok.com/%s" % endpoint)
     if method != "GET":
         request.get_method = lambda: method
     request.add_header("Authorization", "Basic %s" % authstr)
     request.add_header("Content-Type", "application/json")
-    response = urllib2.urlopen(request, json.dumps(data) if data else None)
+    response = urllib.request.urlopen(request, json.dumps(data) if data else None)
     try:
         return json.loads(response.read())
     except:

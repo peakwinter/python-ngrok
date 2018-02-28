@@ -1,2 +1,2 @@
-import client
-import link
+from . import client
+from . import link
